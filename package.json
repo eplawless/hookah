@@ -1,0 +1,17 @@
+{
+  "name": "hookah",
+  "version": "0.0.1",
+  "description": "Implementation of React hooks for non-react functions.",
+  "main": "index.js",
+  "directories": {
+    "test": "test"
+  },
+  "scripts": {
+    "test": "jest"
+  },
+  "author": "Eric Lawless",
+  "license": "MIT",
+  "devDependencies": {
+    "jest": "^23.6.0"
+  }
+}
