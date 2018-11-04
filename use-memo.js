@@ -1,3 +1,6 @@
+const areInputsIdentical = require('./are-inputs-identical');
+const getCallerLineAndChar = require('./get-caller-line-and-char');
+
 const memoTableByFunction = new WeakMap();
 
 class MemoTableEntry {
@@ -6,14 +9,7 @@ class MemoTableEntry {
     this.arrInputs = arrInputs;
   }
   hasSameInputs(arrOtherInputs) {
-    const arrInputs = this.arrInputs;
-    if (arrInputs.length !== arrOtherInputs.length) { return false; }
-    for (let idx = 0; idx < arrInputs.length; ++idx) {
-      if (arrInputs[idx] !== arrOtherInputs[idx]) {
-        return false;
-      }
-    }
-    return true;
+    return areInputsIdentical(this.arrInputs, arrOtherInputs);
   }
 }
 
@@ -27,15 +23,6 @@ class MemoTable {
   set(lineAndChar, entry) {
     this.entryByLineAndChar[lineAndChar] = entry;
   }
-}
-
-const reLineAndChar = /[^:]*:([:\d]+)/;
-
-function getCallerLineAndChar(stack) {
-  const callerFrame = stack.split('\n')[2];
-  const match = callerFrame.match(reLineAndChar);
-  if (!match) { throw new Error('didn\'t recognize call stack format'); }
-  return match[1];
 }
 
 function useMemo(action, arrInputs) {
