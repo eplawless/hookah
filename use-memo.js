@@ -1,59 +1,17 @@
-const areInputsIdentical = require('./are-inputs-identical');
-const getCallerLineAndChar = require('./get-caller-line-and-char');
-
-const memoTableByFunction = new WeakMap();
-
-class MemoTableEntry {
-  constructor(value, arrInputs) {
-    this.value = value;
-    this.arrInputs = arrInputs;
-  }
-  hasSameInputs(arrOtherInputs) {
-    return areInputsIdentical(this.arrInputs, arrOtherInputs);
-  }
-}
-
-class MemoTable {
-  constructor() {
-    this.entryByLineAndChar = {};
-  }
-  get(lineAndChar) {
-    return this.entryByLineAndChar[lineAndChar];
-  }
-  set(lineAndChar, entry) {
-    this.entryByLineAndChar[lineAndChar] = entry;
-  }
-}
+const hookTable = require('./hook-table');
 
 function useMemo(action, arrInputs) {
   arrInputs = arrInputs || [];
-  
-  // ensure memoization table for caller fn
-  const caller = useMemo.caller;
-  let memoTable = memoTableByFunction.get(caller);
-  if (!memoTable) {
-    memoTable = new MemoTable();
-    memoTableByFunction.set(caller, memoTable)
-  }
 
-  // get or create memoization table entry for this line number
+  const caller = useMemo.caller;
   const stack = (new Error).stack;
-  const lineAndChar = getCallerLineAndChar(stack);
-  let memoTableEntry = memoTable.get(lineAndChar);
-  if (!memoTableEntry) {
-    const value = action();
-    memoTableEntry = new MemoTableEntry(value, arrInputs);
-    memoTable.set(lineAndChar, memoTableEntry);
-    return value;
-  }
-  
-  // compare existing entry's stored inputs against new inputs
-  if (memoTableEntry.hasSameInputs(arrInputs)) {
-    return memoTableEntry.value;
+  const hookTableEntry = hookTable.getEntry(caller, stack);
+
+  if (arrInputs.length > 0 && hookTableEntry.hasSameInputs(arrInputs)) {
+    return hookTableEntry.value;
   } else {
     const value = action();
-    memoTableEntry.value = value;
-    memoTableEntry.arrInputs = arrInputs;
+    hookTableEntry.update(value, arrInputs);
     return value;
   }
 }
