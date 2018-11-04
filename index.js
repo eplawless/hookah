@@ -1,3 +1,4 @@
 module.exports = {
-  useMemo: require('./use-memo')
+  useMemo: require('./use-memo'),
+  useState: require('./use-state')
 };
