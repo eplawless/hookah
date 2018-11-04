@@ -75,4 +75,6 @@ test('useMemo can be called inside a branch without fucking anything up', () => 
   expect(callCount).toBe(2);
   action(true);
   expect(callCount).toBe(3);
+  action(true);
+  expect(callCount).toBe(3);
 });
