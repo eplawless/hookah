@@ -1,5 +1,5 @@
 # hookah
-Proof of concept implementation of React hooks for plain JS functions.
+Proof of concept implementation of React's "hooks" for plain JS functions.
 
 # but why?
 The concept we're hoping to prove: these hooks are not subject to some of the current constraints on React hooks.
